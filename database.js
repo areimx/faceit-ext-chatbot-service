@@ -140,7 +140,7 @@ app.get('/bots/:botId/config', async function (req, res) {
 
 async function getEntityData(entityId) {
   let entityDataQuery = await pool.query(
-    `SELECT entities.entity_commands, entities.entity_timers, entities.timer_counter_max, welcome_messages.message FROM entities 
+    `SELECT entities.entity_commands, entities.entity_timers, entities.timer_counter_max, entities.read_only, welcome_messages.message FROM entities 
     LEFT JOIN welcome_messages on welcome_messages.entity_guid = entities.entity_guid
     WHERE entities.entity_guid=? LIMIT 1`,
     [entityId]
@@ -149,13 +149,17 @@ async function getEntityData(entityId) {
     let commandsList = {};
     let timersList = [];
     let timer_counter_max = 30;
+    let read_only = false;
     let welcome_message = null;
+    
     if (entityDataQuery[0].entity_commands)
       commandsList = JSON.parse(entityDataQuery[0].entity_commands);
     if (entityDataQuery[0].entity_timers)
       timersList = JSON.parse(entityDataQuery[0].entity_timers);
     if (entityDataQuery[0].timer_counter_max)
       timer_counter_max = entityDataQuery[0].timer_counter_max;
+    if (entityDataQuery[0].read_only)
+      read_only = entityDataQuery[0].read_only ? true : false;
     if (entityDataQuery[0].message)
       welcome_message = entityDataQuery[0].message;
 
@@ -164,6 +168,7 @@ async function getEntityData(entityId) {
         "commands": commandsList,
         "timers": timersList,
         "timer_counter_max": timer_counter_max,
+        "read_only": read_only,
         "welcome_message": welcome_message
     };
   }

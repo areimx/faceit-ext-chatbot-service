@@ -117,6 +117,12 @@ async function startWebsocket(initialStart = false) {
 					messageCounts[messageRoom] = 0;
 				}
 
+				if (entities[messageRoom].read_only) {
+					deleteMessage(messageRoom, messageId);
+					muteUser(messageRoom, messageAuthor, 1*60*60);
+					return;
+				}
+
 				if (messageContent.startsWith('!')) {
 					messageContent = messageContent.substring(1);
 					if (entities[messageRoom].commands[messageContent]) {
