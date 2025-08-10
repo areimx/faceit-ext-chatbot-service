@@ -1,1 +1,12 @@
-.env
+# Environment variables
+.env*
+!.env.example
+
+# Node modules
+node_modules/
+
+# Temporary files and folders
+temp/
+
+# HAR Files
+docs/*.har
