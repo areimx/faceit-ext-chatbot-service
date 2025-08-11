@@ -3,7 +3,7 @@
     "@xmpp/client": "^0.13.5",
     "@xmpp/debug": "^0.13.5",
     "@xmpp/xml": "^0.13.3",
-    "axios": "^0.21.1",
+    "axios": "^1.11.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "mysql": "^2.18.1",
