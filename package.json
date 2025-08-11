@@ -11,12 +11,16 @@
     "util": "^0.12.3"
   },
   "devDependencies": {
+    "@eslint/config-helpers": "^0.3.1",
     "@eslint/js": "^9.33.0",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.31.1",
     "eslint-plugin-n": "^17.21.3",
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-security": "^3.0.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "globals": "^16.3.0",
     "prettier": "^3.6.2"
   },
   "scripts": {
