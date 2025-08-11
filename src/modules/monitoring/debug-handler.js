@@ -1,4 +1,4 @@
-const { botLog, idManager, cleanupEntityData } = require('../../lib/utils');
+const { botLog, idManager } = require('../../lib/utils');
 const { postRequest } = require('../../lib/http/client.js');
 const { apiConfig } = require('../../config');
 const { createResubscribeStanza } = require('../../lib/xmpp/actions.js');
@@ -101,77 +101,43 @@ class DebugHandler {
       ? error.getChildText('text') || 'Unknown error'
       : 'No error details';
 
-    if (fromJid && fromJid.includes('@supergroups.')) {
-      const entityId = idManager.fromJid(fromJid);
+    if (
+      !fromJid ||
+      (!fromJid.includes('@supergroups') && !fromJid.includes('@muclight'))
+    ) {
+      return;
+    }
 
-      if (entityId && this.stateManager.hasEntity(entityId)) {
+    const entityId = idManager.fromJid(fromJid);
+    if (entityId && this.stateManager.hasEntity(entityId)) {
+      botLog(
+        this.config.botId,
+        'error',
+        `Entity ${entityId} does not exist in FACEIT (404 error): ${errorText}. Removing from cache.`,
+      );
+
+      // Clean up entity data
+      this.stateManager.cleanupEntityData(entityId, {
+        addToRecentlyUnassigned: true,
+        addToNonExistent: true,
+      });
+
+      // Update entity status to inactive
+      try {
+        await postRequest(`${apiConfig.baseUrl}/entities/${entityId}/status`, {
+          status: 'inactive',
+        });
         botLog(
           this.config.botId,
-          'error',
-          `Entity ${entityId} does not exist in FACEIT (404 error): ${errorText}. Removing from cache.`,
+          'log',
+          `Updated entity ${entityId} status to inactive in database.`,
         );
-
-        cleanupEntityData(entityId, this.stateManager.getDebugSnapshot(), {
-          botId: this.config.botId,
-          mucDomain: this.xmppConfig.mucDomain,
-          addToRecentlyUnassigned: true,
-          addToNonExistent: true,
-        });
-
-        // Update entity status to inactive in database instead of using timeout
-        try {
-          await postRequest(
-            `${apiConfig.baseUrl}/entities/${entityId}/status`,
-            { status: 'inactive' },
-          );
-          botLog(
-            this.config.botId,
-            'log',
-            `Updated entity ${entityId} status to inactive in database.`,
-          );
-        } catch (error) {
-          botLog(
-            this.config.botId,
-            'warn',
-            `Failed to update entity ${entityId} status to inactive: ${error.message}`,
-          );
-        }
-      }
-    } else if (fromJid && fromJid.includes('@muclight.')) {
-      const entityId = idManager.fromJid(fromJid);
-
-      if (entityId && this.stateManager.hasEntity(entityId)) {
+      } catch (error) {
         botLog(
           this.config.botId,
-          'error',
-          `MUC Light room for entity ${entityId} does not exist in FACEIT (404 error): ${errorText}. Removing from cache.`,
+          'warn',
+          `Failed to update entity ${entityId} status to inactive: ${error.message}`,
         );
-
-        cleanupEntityData(entityId, this.stateManager.getDebugSnapshot(), {
-          botId: this.config.botId,
-          mucDomain: this.xmppConfig.mucDomain,
-          addToRecentlyUnassigned: true,
-          addToNonExistent: true,
-        });
-
-        // Update entity status to inactive in database
-        try {
-          await postRequest(
-            `${apiConfig.baseUrl}/entities/${entityId}/status`,
-            { status: 'inactive' },
-          );
-          botLog(
-            this.config.botId,
-            'log',
-            `Updated entity ${entityId} status to inactive in database.`,
-          );
-        } catch (error) {
-          botLog(
-            this.config.botId,
-            'warn',
-            `Failed to update entity ${entityId} status to inactive: ${error.message}`,
-          );
-        }
       }
     }
   }

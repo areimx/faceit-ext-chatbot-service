@@ -8,7 +8,7 @@ const { client, xml } = require('@xmpp/client');
 const { postRequest, getRequest } = require('../../lib/http/client.js');
 const express = require('express');
 const xmppActions = require('../../lib/xmpp/actions.js');
-const { botLog, cleanupEntityData, idManager } = require('../../lib/utils');
+const { botLog, idManager } = require('../../lib/utils');
 const {
   joinRoomForEntity,
   leaveRoomForEntity,
@@ -1133,27 +1133,10 @@ function handleEntityUnassignment(req, res) {
     // Clean up profanity filter config for unassigned entity
     profanityFilterConfigs.delete(entityId);
 
-    // Clean up entity data and state
-    cleanupEntityData(
-      entityId,
-      {
-        entities: stateManager.getAllEntities(),
-        messageCounts: stateManager.getDebugSnapshot().messageCounts,
-        autoMessageTurn: stateManager.getDebugSnapshot().autoMessageTurn,
-        supergroupSubscriptions:
-          stateManager.getDebugSnapshot().supergroupSubscriptions,
-        recentlyUnassignedEntities:
-          stateManager.getDebugSnapshot().recentlyUnassignedEntities,
-        nonExistentEntities:
-          stateManager.getDebugSnapshot().nonExistentEntities,
-      },
-      {
-        botId: config.botId,
-        mucDomain: xmppConfig.mucDomain,
-        addToRecentlyUnassigned: true,
-        addToNonExistent: false,
-      },
-    );
+    stateManager.cleanupEntityData(entityId, {
+      addToRecentlyUnassigned: true,
+      addToNonExistent: false,
+    });
 
     // Leave the room if XMPP is connected
     if (
@@ -1351,27 +1334,10 @@ function scheduleEntityUpdates() {
               // Clean up profanity filter config for removed entity
               profanityFilterConfigs.delete(entityId);
 
-              cleanupEntityData(
-                entityId,
-                {
-                  entities: stateManager.getAllEntities(),
-                  messageCounts: stateManager.getDebugSnapshot().messageCounts,
-                  autoMessageTurn:
-                    stateManager.getDebugSnapshot().autoMessageTurn,
-                  supergroupSubscriptions:
-                    stateManager.getDebugSnapshot().supergroupSubscriptions,
-                  recentlyUnassignedEntities:
-                    stateManager.getDebugSnapshot().recentlyUnassignedEntities,
-                  nonExistentEntities:
-                    stateManager.getDebugSnapshot().nonExistentEntities,
-                },
-                {
-                  botId: config.botId,
-                  mucDomain: xmppConfig.mucDomain,
-                  addToRecentlyUnassigned: false,
-                  addToNonExistent: false,
-                },
-              );
+              stateManager.cleanupEntityData(entityId, {
+                addToRecentlyUnassigned: false,
+                addToNonExistent: false,
+              });
 
               // Leave the room if XMPP is connected
               leaveRoomIfConnected(entityId, stateManager, context);

@@ -5,8 +5,9 @@
 # Node modules
 node_modules/
 
-# Temporary files and folders
+# Temporary folders
 temp/
 
-# HAR Files
-docs/*.har
+# Temporary files
+*.log
+*.har

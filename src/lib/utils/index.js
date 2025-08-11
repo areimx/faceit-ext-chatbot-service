@@ -76,57 +76,6 @@ function truncateString(text, maxLength) {
 }
 
 /**
- * Cleans up entity data from all tracking objects
- * @param {string} entityId - The entity ID to clean up
- * @param {object} caches - Object containing all cache references
- * @param {Map} caches.entities - The entities cache Map
- * @param {Map} caches.messageCounts - The message counts Map
- * @param {Map} caches.autoMessageTurn - The auto message turn Map
- * @param {Map} caches.supergroupSubscriptions - The supergroup subscriptions map
- * @param {Set} caches.recentlyUnassignedEntities - Set of recently unassigned entities
- * @param {Set} caches.nonExistentEntities - Set of non-existent entities
- * @param {object} options - Optional cleanup configuration
- * @param {string} options.botId - The bot ID for logging
- * @param {string} options.mucDomain - The MUC domain for room JID construction
- * @param {boolean} options.addToRecentlyUnassigned - Whether to add to recently unassigned set
- * @param {boolean} options.addToNonExistent - Whether to add to non-existent set
- */
-function cleanupEntityData(entityId, caches, options = {}) {
-  const {
-    entities,
-    messageCounts,
-    autoMessageTurn,
-    supergroupSubscriptions,
-    recentlyUnassignedEntities,
-    nonExistentEntities,
-  } = caches;
-
-  const { addToRecentlyUnassigned = false, addToNonExistent = false } = options;
-
-  // Remove from entities cache
-  entities.delete(entityId);
-
-  // Clean up message counts
-  messageCounts.delete(entityId);
-
-  // Clean up auto message turn
-  autoMessageTurn.delete(entityId);
-
-  // Clean up supergroup subscriptions
-  supergroupSubscriptions.delete(entityId);
-
-  // Add to recently unassigned entities set if requested
-  if (addToRecentlyUnassigned) {
-    recentlyUnassignedEntities.add(entityId);
-  }
-
-  // Add to non-existent entities set if requested
-  if (addToNonExistent) {
-    nonExistentEntities.add(entityId);
-  }
-}
-
-/**
  * Unified ID management system for entity IDs across the application.
  * Standardizes entity ID handling and format conversion.
  */
@@ -219,6 +168,5 @@ module.exports = {
   botLog,
   sleep,
   truncateString,
-  cleanupEntityData,
   idManager,
 };

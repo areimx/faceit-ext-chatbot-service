@@ -555,6 +555,60 @@ class StateManager {
     }
   }
 
+  /**
+   * Clean up entity data.
+   *
+   * @param {string} entityId - The entity ID to clean up
+   * @param {object} options - Cleanup configuration options
+   * @param {boolean} options.addToRecentlyUnassigned - Whether to add to recently unassigned set
+   * @param {boolean} options.addToNonExistent - Whether to add to non-existent set
+   */
+  cleanupEntityData(entityId, options = {}) {
+    const { addToRecentlyUnassigned = false, addToNonExistent = false } =
+      options;
+
+    // Remove from entities cache
+    const existed = this._state.entities.has(entityId);
+    if (existed) {
+      this._state.entities.delete(entityId);
+      this._stats.entitiesCount--;
+    }
+
+    // Clean up message counts
+    this.removeMessageCount(entityId);
+
+    // Clean up auto message turn
+    this.removeAutoMessageTurn(entityId);
+
+    // Clean up supergroup subscriptions
+    const hadSubscription = this._state.supergroupSubscriptions.has(entityId);
+    if (hadSubscription) {
+      this._state.supergroupSubscriptions.delete(entityId);
+      this._stats.supergroupSubscriptionsSize--;
+    }
+
+    // Add to recently unassigned entities set if requested
+    if (addToRecentlyUnassigned) {
+      this.addRecentlyUnassignedEntity(entityId);
+    }
+
+    // Add to non-existent entities set if requested
+    if (addToNonExistent) {
+      this.addNonExistentEntity(entityId);
+    }
+
+    // Notify listeners of the cleanup
+    if (existed) {
+      this._notifyListeners('entity:cleaned', {
+        entityId,
+        addToRecentlyUnassigned,
+        addToNonExistent,
+      });
+    }
+
+    return existed;
+  }
+
   // --- MEMORY MANAGEMENT ---
 
   performMemoryCleanup() {
