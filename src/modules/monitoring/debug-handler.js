@@ -1,6 +1,6 @@
-const { botLog, idManager } = require('../../lib/utils');
-const { postRequest } = require('../../lib/http/client.js');
 const { apiConfig } = require('../../config');
+const { postRequest } = require('../../lib/http/client.js');
+const { botLog, idManager } = require('../../lib/utils');
 const { createResubscribeStanza } = require('../../lib/xmpp/actions.js');
 
 /**

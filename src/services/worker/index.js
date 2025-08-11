@@ -3,25 +3,9 @@
  * Individual bot worker process handling XMPP connections and message processing.
  */
 
-const debug = require('@xmpp/debug');
 const { client, xml } = require('@xmpp/client');
-const { postRequest, getRequest } = require('../../lib/http/client.js');
+const debug = require('@xmpp/debug');
 const express = require('express');
-const xmppActions = require('../../lib/xmpp/actions.js');
-const { botLog, idManager } = require('../../lib/utils');
-const {
-  joinRoomForEntity,
-  leaveRoomForEntity,
-} = require('../../lib/xmpp/utils.js');
-const StateManager = require('../../core/state-manager.js');
-const MessageProcessor = require('../../modules/processing/message-processor.js');
-const Moderation = require('../../modules/moderation/moderation.js');
-const TimedMessages = require('../../modules/messaging/timed-messages.js');
-const Commands = require('../../modules/messaging/commands.js');
-const HealthMonitor = require('../../modules/monitoring/health-monitor.js');
-const DebugHandler = require('../../modules/monitoring/debug-handler.js');
-const BannedWordsManager = require('../../modules/moderation/banned-words/banned-words-manager.js');
-const DiscordWebhookManager = require('../../modules/moderation/discord/discord-webhook-manager.js');
 
 const {
   createConfig,
@@ -30,6 +14,22 @@ const {
   constants,
 } = require('../../config');
 const { isStaging, isVerboseLoggingEnabled } = require('../../config');
+const StateManager = require('../../core/state-manager.js');
+const { postRequest, getRequest } = require('../../lib/http/client.js');
+const { botLog, idManager } = require('../../lib/utils');
+const xmppActions = require('../../lib/xmpp/actions.js');
+const {
+  joinRoomForEntity,
+  leaveRoomForEntity,
+} = require('../../lib/xmpp/utils.js');
+const Commands = require('../../modules/messaging/commands.js');
+const TimedMessages = require('../../modules/messaging/timed-messages.js');
+const BannedWordsManager = require('../../modules/moderation/banned-words/banned-words-manager.js');
+const DiscordWebhookManager = require('../../modules/moderation/discord/discord-webhook-manager.js');
+const Moderation = require('../../modules/moderation/moderation.js');
+const DebugHandler = require('../../modules/monitoring/debug-handler.js');
+const HealthMonitor = require('../../modules/monitoring/health-monitor.js');
+const MessageProcessor = require('../../modules/processing/message-processor.js');
 
 // --- CONFIGURATION & STATE ---
 
@@ -549,11 +549,12 @@ function handleXmppError(err) {
       clearInterval(stateManager.getConnectionHealthCheckId());
 
       // Force stop and reconnect
-      void stateManager
-        .getXmppClient()
-        .stop()
-        .catch(() => {})
-        .finally(() => {
+      void (async () => {
+        try {
+          await stateManager.getXmppClient().stop();
+        } catch {
+          // Ignore stop errors
+        } finally {
           stateManager.setConnecting(false);
           stateManager.setReconnecting(false); // Reset state
           stateManager.setBotJid(null);
@@ -564,7 +565,8 @@ function handleXmppError(err) {
               connectXmpp();
             }
           }, 1000);
-        });
+        }
+      })();
     }
   } else if (
     err.condition === 'remote-server-timeout' ||

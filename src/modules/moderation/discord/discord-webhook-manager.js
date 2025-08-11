@@ -1,8 +1,8 @@
+const { createApiClient } = require('../../../lib/http/client.js');
 const { botLog } = require('../../../lib/utils');
 const {
   isValidDiscordWebhookUrl,
 } = require('../../../lib/utils/validation.js');
-const { createApiClient } = require('../../../lib/http/client.js');
 
 /**
  * Discord webhook manager for sending moderation notifications

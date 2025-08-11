@@ -1,7 +1,7 @@
-const { botLog, idManager } = require('../../lib/utils');
 const { constants, apiConfig } = require('../../config');
 const { createApiClient } = require('../../lib/http/client.js');
 const { postRequest } = require('../../lib/http/client.js');
+const { botLog, idManager } = require('../../lib/utils');
 
 /**
  * Moderation module for handling content moderation and user management.

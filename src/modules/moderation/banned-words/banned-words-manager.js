@@ -1,12 +1,13 @@
-const SmartWordFilter = require('./smart-word-filter.js');
+const { getRequest } = require('../../../lib/http/client.js');
 const { botLog } = require('../../../lib/utils');
+const { parseJsonField } = require('../../../lib/utils/parsers');
 const {
   isValidArray,
   isSafeWordString,
   sanitizeStringArray,
 } = require('../../../lib/utils/validation.js');
-const { getRequest } = require('../../../lib/http/client.js');
-const { parseJsonField } = require('../../../lib/utils/parsers');
+
+const SmartWordFilter = require('./smart-word-filter.js');
 
 /**
  * Banned words manager using custom smart word filter

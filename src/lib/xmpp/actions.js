@@ -5,6 +5,7 @@
  */
 
 const xml = require('@xmpp/xml');
+
 const { xmppConfig, constants } = require('../../config');
 const { idManager } = require('../utils');
 

@@ -9,8 +9,9 @@ require('dotenv').config();
 
 const { spawn } = require('child_process');
 const http = require('http');
-const { getRequest } = require('../../lib/http/client.js');
+
 const { constants } = require('../../config');
+const { getRequest } = require('../../lib/http/client.js');
 const { botLog } = require('../../lib/utils');
 const { parseJsonField } = require('../../lib/utils/parsers');
 
