@@ -2,6 +2,9 @@
 
 **⚠️ Disclaimer:** This is an independent, community-driven project and is not affiliated with, endorsed by, validated by, or sponsored by FACEIT (ESL FACEIT GROUP LIMITED). Any use of FACEIT's name or services is for descriptive purposes only.
 
+![CI Status](https://github.com/areimx/faceit-ext-chatbot-service/actions/workflows/ci.yml/badge.svg)
+![Deploy Status](https://github.com/areimx/faceit-ext-chatbot-service/actions/workflows/deploy.yml/badge.svg)
+
 A multi-process XMPP chatbot service for FACEIT chat rooms that handles content moderation, automated messages, and bot commands.
 
 - The version from 2021 that connected to FACEIT's legacy chat service is available in the `chat-legacy` branch.
