@@ -8,6 +8,20 @@ node_modules/
 # Temporary folders
 temp/
 
+# Deployment logs
+logs/deploy/
+
 # Temporary files
 *.log
 *.har
+
+# Other
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+*.tar.gz
+*.sql
+*.bak
+.DS_Store
+Thumbs.db
