@@ -4,12 +4,36 @@
  */
 
 const axios = require('axios');
+const { apiConfig } = require('../../config');
 
 // Standard HTTP client configuration
 const DEFAULT_TIMEOUT = 10000; // 10 seconds
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
 };
+
+/**
+ * Adds Cloudflare bypass header if the URL is targeting api.faceit.com
+ * @param {string} url - The request URL
+ * @param {object} headers - The current headers object
+ * @returns {object} Headers with bypass key if applicable
+ */
+function addCfBypassHeaderIfNeeded(url, headers) {
+  // Skip if no bypass key is configured
+  if (!apiConfig.faceitCfBypassKey) {
+    return headers;
+  }
+
+  // Check if URL targets api.faceit.com (production or staging)
+  if (url.includes('api.faceit.com') || url.includes('api.faceit-stage.com')) {
+    return {
+      ...headers,
+      'x-faceit-cf-rule-bypass-key': apiConfig.faceitCfBypassKey,
+    };
+  }
+
+  return headers;
+}
 
 /**
  * Makes a POST request with standardized error handling
@@ -32,10 +56,10 @@ async function postRequest(url, data, options = {}) {
     const axiosConfig = {
       method: 'POST',
       url,
-      headers: {
+      headers: addCfBypassHeaderIfNeeded(url, {
         ...DEFAULT_HEADERS,
         ...headers,
-      },
+      }),
       timeout,
     };
 
@@ -81,10 +105,10 @@ async function getRequest(url, options = {}) {
 
   try {
     const response = await axios.get(url, {
-      headers: {
+      headers: addCfBypassHeaderIfNeeded(url, {
         ...DEFAULT_HEADERS,
         ...headers,
-      },
+      }),
       timeout,
     });
 

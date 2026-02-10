@@ -48,6 +48,8 @@ const apiConfig = {
   chatAdminUrl: isStaging
     ? 'https://api.faceit-stage.com/chat-admin/v1'
     : 'https://api.faceit.com/chat-admin/v1',
+  /** Cloudflare bypass key for api.faceit.com requests */
+  faceitCfBypassKey: process.env.FACEIT_CF_BYPASS_KEY || null,
 };
 
 const defaultBotconfig = {
