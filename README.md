@@ -114,9 +114,7 @@ STAGE_BOT_ENTITY_GUID=<staging_entity_guid>
 - **Staging**: Uses hardcoded bot credentials
 - **Production**: Fetches fresh credentials from FACEIT API
 
-## Deployment
-
-### Startup Process
+## Local Development Startup
 
 #### Option 1: Automatic Startup (Recommended)
 
