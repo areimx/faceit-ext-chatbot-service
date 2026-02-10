@@ -20,6 +20,9 @@ module.exports = {
       wait_ready: true,
       listen_timeout: 60000, // 60 seconds
       kill_timeout: 10000, // 10 seconds
+      env_production: {
+        NODE_ENV: 'production',
+      },
     },
     {
       name: 'chatbot-app',
@@ -30,7 +33,9 @@ module.exports = {
       wait_ready: true,
       listen_timeout: 60000, // 60 seconds
       kill_timeout: 10000, // 10 seconds
-      depends_on: ['chatbot-db-api'],
+      env_production: {
+        NODE_ENV: 'production',
+      },
     },
   ],
 };
