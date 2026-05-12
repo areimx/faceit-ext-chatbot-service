@@ -57,10 +57,12 @@ class HealthMonitor {
         // DON'T set isReconnecting here - let connectXmpp manage its own state
 
         // Force a complete stop to trigger reconnection cycle
+        this.stateManager.setIntentionalStop(true);
         this.stateManager
           .getXmppClient()
           .stop()
           .catch((error) => {
+            this.stateManager.setIntentionalStop(false);
             botLog(
               this.config.botId,
               'warn',

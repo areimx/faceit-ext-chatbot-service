@@ -390,11 +390,13 @@ async function cleanupExistingConnections() {
   // Clean up any existing connections or intervals before reconnecting.
   if (stateManager.getXmppClient()) {
     try {
+      stateManager.setIntentionalStop(true);
       await stateManager
         .getXmppClient()
         .stop()
         .catch(() => {});
     } catch (error) {
+      stateManager.setIntentionalStop(false);
       botLog(
         config.botId,
         'warn',
@@ -551,9 +553,10 @@ function handleXmppError(err) {
       // Force stop and reconnect
       void (async () => {
         try {
+          stateManager.setIntentionalStop(true);
           await stateManager.getXmppClient().stop();
         } catch {
-          // Ignore stop errors
+          stateManager.setIntentionalStop(false);
         } finally {
           stateManager.setConnecting(false);
           stateManager.setReconnecting(false); // Reset state
@@ -603,6 +606,13 @@ function handleXmppOffline() {
   clearInterval(stateManager.getProcessWatchdogId());
 
   if (!stateManager.isShuttingDown()) {
+    // If stop() was called deliberately (during cleanup/reconnect), the caller
+    // manages reconnection itself — don't schedule a competing reconnect here.
+    if (stateManager.isIntentionalStop()) {
+      stateManager.setIntentionalStop(false);
+      return;
+    }
+
     botLog(
       config.botId,
       'log',

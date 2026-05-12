@@ -48,6 +48,9 @@ class StateManager {
       // Authentication
       forceCredentialRefresh: false,
 
+      // Suppress offline-event reconnect when stop() is called deliberately
+      intentionalStop: false,
+
       // Process watchdog
       processWatchdogId: null,
     };
@@ -493,6 +496,14 @@ class StateManager {
   setForceCredentialRefresh(force) {
     this._state.forceCredentialRefresh = force;
     this._notifyListeners('auth:refresh', { force });
+  }
+
+  isIntentionalStop() {
+    return this._state.intentionalStop;
+  }
+
+  setIntentionalStop(val) {
+    this._state.intentionalStop = val;
   }
 
   // --- PROCESS WATCHDOG ---
